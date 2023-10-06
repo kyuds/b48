@@ -15,11 +15,27 @@ function init_board() {
     done
 }
 
-function draw_horizontal_line() {
-    
+function draw_boarder_line() {
+    for ((i=0; i<$SIZE; i++)); do
+        echo -n "+"
+        for ((j=0; j<$HOR_CNT; j++)); do
+            echo -n "-"
+        done
+    done
+    echo "+"
 }
 
+function draw_horizontal_empty() {
+    for ((i=0; i<$SIZE; i++)); do
+        echo -n "|"
+        for ((j=0; j<$HOR_CNT; j++)); do
+            echo -n " "
+        done
+    done
+    echo "|"
+}
 
 init_board
-
+draw_boarder_line
+draw_horizontal_empty
 
