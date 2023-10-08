@@ -47,12 +47,12 @@ function gen_clear_string() {
     echo "$CLR\c"
 }
 
-function win() {
-    # need to clear board
-    clear
-    echo "You win!"
-    exit 0
+CLEAR_STRING=`gen_clear_string`
+
+function clear() {
+    echo -e "$CLEAR_STRING"
 }
+
 
 # PRINT BOARD
 function print_board() {
@@ -64,10 +64,6 @@ function print_board() {
         for ((c=0; c<$SIZE; c++)); do
             idx=$(expr "$r" '*' "$SIZE" '+' "$c")
             itm=${board[idx]}
-
-            if [[ ${#itm} -gt $HOR_CNT ]]; then
-                win
-            fi
 
             rightpad=$(( ($HOR_CNT - ${#itm}) / 2 ))
             leftpad=$(( $HOR_CNT - $rightpad - ${#itm} ))
@@ -93,17 +89,16 @@ function print_board() {
     echo -en "$build"
 }
 
-CLEAR_STRING=`gen_clear_string`
-
-function clear() {
-    echo -e "$CLEAR_STRING"
-}
-
 # GAME LOGIC
 function move() {
     off_x="$1"
     off_y="$2"
     #echo "x_off: $off_x, y_off: $off_y"
+}
+
+function win() {
+    echo "You beat the game!"
+    exit 0
 }
 
 # GAME PLAY
