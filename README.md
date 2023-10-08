@@ -1,2 +1,2 @@
-# zsh48
-MacOS 2048 ShellScript
+# b48
+MacOS 2048 BashScript
