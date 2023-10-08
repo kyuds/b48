@@ -42,14 +42,14 @@ function gen_horizontal_empty() {
     echo "$ret|\n"
 }
 
-function clear() {
+function gen_clear_string() {
     UPLINE=$(tput cuu1)
     ERASELINE=$(tput el)
     CLR=""
     for ((c=0; c<$(( $VER_CNT * $SIZE + $SIZE + 1)); c++)); do
         CLR+="${UPLINE}${ERASELINE}"
     done
-    echo -e "$CLR\c"
+    echo "$CLR\c"
 }
 
 function win() {
@@ -98,6 +98,12 @@ function print_board() {
     echo -en "$build"
 }
 
+CLEAR_STRING=`gen_clear_string`
+
+function clear() {
+    echo -e "$CLEAR_STRING"
+}
+
 # GAME LOGIC
 
 init_board
@@ -108,6 +114,8 @@ for ((tst=1; tst<10; tst++)); do
     sleep 1
     clear
 done
+
+
 
 
 
