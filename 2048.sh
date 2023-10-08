@@ -13,12 +13,6 @@ function init_board() {
     for ((i=0; i<$(expr "$SIZE" '*' "$SIZE"); i++)); do
         board[i]="1"
     done
-
-    # dummy values
-    board[2]=2048
-    board[10]=16
-    board[14]=65536
-    board[5]=512
 }
 
 function gen_boarder_line() {
@@ -106,17 +100,31 @@ function clear() {
 }
 
 # GAME LOGIC
+function move() {
+    off_x="$1"
+    off_y="$2"
+    #echo "x_off: $off_x, y_off: $off_y"
+}
 
+# GAME PLAY
 init_board
 
-for ((tst=1; tst<10; tst++)); do
-    board[0]="$tst"
+while true; do
     print_board
-    sleep 1
+    read -rsn1 press
+    if [ "$press" = "w" ]; then
+        move 0 1
+    elif [ "$press" = "a" ]; then
+        move -1 0
+    elif [ "$press" = "s" ]; then
+        move 0 -1
+    elif [ "$press" = "d" ]; then
+        move 1 0
+    elif [ "$press" = "q" ]; then
+        exit 0
+    fi
     clear
 done
-
-
 
 
 
