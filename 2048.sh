@@ -14,6 +14,7 @@ function init_board() {
         board[i]="1"
     done
 
+    # dummy values
     board[2]=2048
     board[10]=16
     board[14]=65536
