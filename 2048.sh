@@ -20,33 +20,36 @@ function init_board() {
     board[5]=512
 }
 
-function draw_boarder_line() {
+function gen_boarder_line() {
+    ret=""
     for ((i=0; i<$SIZE; i++)); do
-        echo -n "+"
+        ret+="+"
         for ((j=0; j<$HOR_CNT; j++)); do
-            echo -n "-"
+            ret+="-"
         done
     done
-    echo "+"
+    echo "$ret+\n"
 }
 
-function draw_horizontal_empty() {
+function gen_horizontal_empty() {
+    ret=""
     for ((i=0; i<$SIZE; i++)); do
-        echo -n "|"
+        ret+="|"
         for ((j=0; j<$HOR_CNT; j++)); do
-            echo -n " "
+            ret+=" "
         done
     done
-    echo "|"
+    echo "$ret|\n"
 }
 
 function clear() {
     UPLINE=$(tput cuu1)
     ERASELINE=$(tput el)
-
+    CLR=""
     for ((c=0; c<$(( $VER_CNT * $SIZE + $SIZE + 1)); c++)); do
-        echo -n "$UPLINE$ERASELINE"
+        CLR+="${UPLINE}${ERASELINE}"
     done
+    echo -e "$CLR\c"
 }
 
 function win() {
@@ -58,9 +61,10 @@ function win() {
 
 # PRINT BOARD
 function print_board() {
-    draw_boarder_line
+    build=""
+    build+=`gen_boarder_line`
     for ((r=0; r<$SIZE; r++)); do
-        draw_horizontal_empty
+        build+=`gen_horizontal_empty`
 	
         for ((c=0; c<$SIZE; c++)); do
             idx=$(expr "$r" '*' "$SIZE" '+' "$c")
@@ -73,43 +77,37 @@ function print_board() {
             rightpad=$(( ($HOR_CNT - ${#itm}) / 2 ))
             leftpad=$(( $HOR_CNT - $rightpad - ${#itm} ))
             
-            echo -n "|"
+            build+="|"
             for ((i=0; i<$leftpad; i++)); do
-                echo -n " "
+                build+=" "
             done
             if [[ $itm -eq 1 ]]; then
-                echo -n " "
+                build+=" "
             else
-                echo -n "$itm"
+                build+="$itm"
             fi
             for ((i=0; i<$rightpad; i++)); do
-                echo -n " "
+                build+=" "
             done
         done
-        echo "|"
+        build+="|\n"
 
-        draw_horizontal_empty
-        draw_boarder_line
+        build+=`gen_horizontal_empty`
+        build+=`gen_boarder_line`
     done
+    echo -en "$build"
 }
 
 # GAME LOGIC
 
 init_board
-print_board
 
-for ((tst=0; tst<10; tst++)); do
-    board[0]=$tst
-    clear
+for ((tst=1; tst<10; tst++)); do
+    board[0]="$tst"
     print_board
     sleep 1
+    clear
 done
-
-board[0]=19283719823719237
-clear
-print_board
-
-
 
 
 
