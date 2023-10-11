@@ -11,7 +11,7 @@ SIZE=4 # creates a SIZE x SIZE grid for play
 # HELPERS
 function init_board() {
     for ((i=0; i<$(expr "$SIZE" '*' "$SIZE"); i++)); do
-        board[i]="1"
+        board[i]=" "
     done
 }
 
@@ -72,11 +72,7 @@ function print_board() {
             for ((i=0; i<$leftpad; i++)); do
                 build+=" "
             done
-            if [[ $itm -eq 1 ]]; then
-                build+=" "
-            else
-                build+="$itm"
-            fi
+            build+="$itm"
             for ((i=0; i<$rightpad; i++)); do
                 build+=" "
             done
@@ -90,10 +86,33 @@ function print_board() {
 }
 
 # GAME LOGIC
+function convert_coordinates() {
+    xcoor="$1"
+    ycoor="$2"
+    reverse="$3"
+
+    if [ "$reverse" = "true" ]; then
+        echo $(( $y + $x * $SIZE ))
+    else
+        echo $(( $x + $y * $SIZE ))
+    fi
+}
+
 function move() {
-    off_x="$1"
-    off_y="$2"
-    #echo "x_off: $off_x, y_off: $off_y"
+    move_factor="$1"
+    reverse="$2"
+    
+    r=$(( ($SIZE - $move_factor * $SIZE) / 2 ))
+    
+}
+
+function new_twos() {
+    echo "Not implemented"
+}
+
+function check_status_and_proceed() {
+    echo "Not implemented"
+    #new_twos
 }
 
 function win() {
@@ -103,19 +122,25 @@ function win() {
 
 # GAME PLAY
 init_board
+# new_twos
 
 while true; do
     print_board
     read -rsn1 press
     if [ "$press" = "w" ]; then
-        move 0 1
+        move -1 false
     elif [ "$press" = "a" ]; then
-        move -1 0
+        move -1 true
     elif [ "$press" = "s" ]; then
-        move 0 -1
+        move 1 false
     elif [ "$press" = "d" ]; then
-        move 1 0
+        move 1 true
     elif [ "$press" = "q" ]; then
+        exit 0
+    fi
+    status=`check_status_and_proceed`
+    if [ "$status" = "dead" ]; then
+        echo "You lose!"
         exit 0
     fi
     clear
