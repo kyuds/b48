@@ -98,26 +98,104 @@ function convert_coordinates() {
     echo $(( $xcoor + $ycoor * $SIZE ))
 }
 
-function move_h() {
-    echo "Not implemented"
+function move_left() {
+    for ((r=1; r<$SIZE; r++)); do
+        for ((c=0; c<$SIZE; c++)); do
+            coor=`convert_coordinates $r $c`
+            block=${board[$coor]}
+            if [ "$block" != " " ]; then
+                for ((off=$r-1; off>=0; off--)); do
+                    coor2=`convert_coordinates $off $c`
+                    block2=${board[$coor2]}
+                    if [ "$block2" = " " ]; then
+                        board[$coor2]="$block"
+                        board[$coor]=" "
+                    elif [ "$block2" = "$block" ]; then
+                        board[$coor2]=$(( $block + $block2 ))
+                        board[$coor]=" "
+                    else
+                        break
+                    fi
+                    coor="$coor2"
+                done
+            fi
+        done
+    done
 }
 
-function move_v() {
-    echo "Not implemented"
+function move_right() {
+    for ((r=$SIZE-2; r>=0; r--)); do
+        for ((c=0; c<$SIZE; c++)); do
+            coor=`convert_coordinates $r $c`
+            block=${board[$coor]}
+            if [ "$block" != " " ]; then
+                for ((off=$r; off<$SIZE; off++)); do
+                    coor2=`convert_coordinates $off $c`
+                    block2=${board[$coor2]}
+                    if [ "$block2" = " " ]; then
+                        board[$coor2]="$block"
+                        board[$coor]=" "
+                    elif [ "$block2" = "$block" ]; then
+                        board[$coor2]=$(( $block + $block2 ))
+                        board[$coor]=" "
+                    else
+                        break
+                    fi
+                    coor="$coor2"
+                done
+            fi
+        done
+    done
 }
 
-# basic move function based on keyboard.
-# separates into two sub functions that handle
-# movement for vertically and horizontally.
-function move() {
-    move_factor="$1"
-    vertical="$2"
-    
-    #if [ "$vertical" = "true" ]; then
-    #    move_v $move_factor
-    #else
-    #    move_h $move_factor
-    #fi 
+function move_up() {
+    for ((r=0; r<$SIZE; r++)); do
+        for ((c=1; c<$SIZE; c++)); do
+            coor=`convert_coordinates $r $c`
+            block=${board[$coor]}
+            if [ "$block" != " " ]; then
+                for ((off=$c-1; off>=0; off--)); do
+                    coor2=`convert_coordinates $r $off`
+                    block2=${board[$coor2]}
+                    if [ "$block2" = " " ]; then
+                        board[$coor2]="$block"
+                        board[$coor]=" "
+                    elif [ "$block2" = "$block" ]; then
+                        board[$coor2]=$(( $block + $block2 ))
+                        board[$coor]=" "
+                    else
+                        break
+                    fi
+                    coor="$coor2"
+                done
+            fi
+        done
+    done
+}
+
+function move_down() {
+    for ((r=0; r<$SIZE; r++)); do
+        for ((c=$SIZE-2; c>=0; c--)); do
+            coor=`convert_coordinates $r $c`
+            block=${board[$coor]}
+            if [ "$block" != " " ]; then
+                for ((off=$c; off<$SIZE; off++)); do
+                    coor2=`convert_coordinates $r $off`
+                    block2=${board[$coor2]}
+                    if [ "$block2" = " " ]; then
+                        board[$coor2]="$block"
+                        board[$coor]=" "
+                    elif [ "$block2" = "$block" ]; then
+                        board[$coor2]=$(( $block + $block2 ))
+                        board[$coor]=" "
+                    else
+                        break
+                    fi
+                    coor="$coor2"
+                done
+            fi
+        done
+    done
 }
 
 # logic to generate at maximum two new positions
@@ -170,13 +248,13 @@ initialize
 while true; do
     read -rsn1 press
     if [ "$press" = "w" ]; then
-        move -1 false
+        move_up
     elif [ "$press" = "a" ]; then
-        move -1 true
+        move_left
     elif [ "$press" = "s" ]; then
-        move 1 false
+        move_down
     elif [ "$press" = "d" ]; then
-        move 1 true
+        move_right
     elif [ "$press" = "q" ]; then
         exit 0
     else
