@@ -98,21 +98,46 @@ function convert_coordinates() {
     fi
 }
 
+function move_h() {
+    echo "Not implemented"
+}
+
+function move_v() {
+    echo "Not implemented"
+}
+
 function move() {
     move_factor="$1"
-    reverse="$2"
+    vertical="$2"
     
-    r=$(( ($SIZE - $move_factor * $SIZE) / 2 ))
-    
+    if [ "$vertical" = "true" ]; then
+        move_v $move_factor
+    else
+        move_h $move_factor
+    fi 
 }
 
 function new_twos() {
-    echo "Not implemented"
-}
+    local -a spots
+    num_empty=0
 
-function check_status_and_proceed() {
-    echo "Not implemented"
-    #new_twos
+    for ((i=0; i<$(( $SIZE * $SIZE )); i++)); do
+        if [ "${board[i]}" = " " ]; then
+            spots[num_empty]="$i"
+            num_empty=$(( $num_empty + 1 ))
+        fi
+    done
+    
+    if [ $num_empty -gt 1 ]; then
+        entries=($(gshuf -i 0-$(( $num_empty - 1 )) -n 2))
+        board[${spots[${entries[0]}]}]="2"
+        board[${spots[${entries[1]}]}]="2"
+    elif [ $num_empty -eq 1 ]; then
+        board[${spots[0]}]="2"
+    else
+        echo "You Lose!"
+        exit 0
+    fi
 }
 
 function win() {
@@ -122,25 +147,24 @@ function win() {
 
 # GAME PLAY
 init_board
-# new_twos
+new_twos
 
 while true; do
     print_board
     read -rsn1 press
     if [ "$press" = "w" ]; then
         move -1 false
+        new_twos
     elif [ "$press" = "a" ]; then
         move -1 true
+        new_twos
     elif [ "$press" = "s" ]; then
         move 1 false
+        new_twos
     elif [ "$press" = "d" ]; then
         move 1 true
+        new_twos
     elif [ "$press" = "q" ]; then
-        exit 0
-    fi
-    status=`check_status_and_proceed`
-    if [ "$status" = "dead" ]; then
-        echo "You lose!"
         exit 0
     fi
     clear
