@@ -5,10 +5,12 @@ declare -a board
 HOR_CNT=7
 VER_CNT=3
 
-# SETTINGS
+# SETTINGS #
 SIZE=4 # creates a SIZE x SIZE grid for play
 
-# HELPERS
+# HELPERS #
+
+# initialize all empty, SIZExSIZE board. 
 function init_board() {
     for ((i=0; i<$(expr "$SIZE" '*' "$SIZE"); i++)); do
         board[i]=" "
@@ -37,6 +39,10 @@ function gen_horizontal_empty() {
     echo "$ret|\n"
 }
 
+# one-time only function to generate an erasing
+# sequence string. Generated string is stored in
+# CLEAR_STRING (see line 55) and evoked to clear
+# the board before rewrite. 
 function gen_clear_string() {
     UPLINE=$(tput cuu1)
     ERASELINE=$(tput el)
@@ -89,13 +95,7 @@ function print_board() {
 function convert_coordinates() {
     xcoor="$1"
     ycoor="$2"
-    reverse="$3"
-
-    if [ "$reverse" = "true" ]; then
-        echo $(( $y + $x * $SIZE ))
-    else
-        echo $(( $x + $y * $SIZE ))
-    fi
+    echo $(( $xcoor + $ycoor * $SIZE ))
 }
 
 function move_h() {
@@ -106,28 +106,46 @@ function move_v() {
     echo "Not implemented"
 }
 
+# basic move function based on keyboard.
+# separates into two sub functions that handle
+# movement for vertically and horizontally.
 function move() {
     move_factor="$1"
     vertical="$2"
     
-    if [ "$vertical" = "true" ]; then
-        move_v $move_factor
-    else
-        move_h $move_factor
-    fi 
+    #if [ "$vertical" = "true" ]; then
+    #    move_v $move_factor
+    #else
+    #    move_h $move_factor
+    #fi 
 }
 
+# logic to generate at maximum two new positions
+# in which "2"s are placed onto the board. This
+# function also helps to detect if the player has
+# lost (no more empty spots) or won (exceeded the
+# number representable on the board). 
 function new_twos() {
     local -a spots
     num_empty=0
+    max_num=0
 
     for ((i=0; i<$(( $SIZE * $SIZE )); i++)); do
         if [ "${board[i]}" = " " ]; then
             spots[num_empty]="$i"
             num_empty=$(( $num_empty + 1 ))
+        else
+            if [ "${board[i]}" -gt $max_num ]; then
+                max_num="${board[i]}"
+            fi
         fi
     done
     
+    if [ ${#max_num} -gt $HOR_CNT ]; then
+        echo "You Win!"
+        exit 0
+    fi
+
     if [ $num_empty -gt 1 ]; then
         entries=($(gshuf -i 0-$(( $num_empty - 1 )) -n 2))
         board[${spots[${entries[0]}]}]="2"
@@ -140,34 +158,33 @@ function new_twos() {
     fi
 }
 
-function win() {
-    echo "You beat the game!"
-    exit 0
+function initialize() {
+    init_board
+    new_twos
+    print_board
 }
 
 # GAME PLAY
-init_board
-new_twos
+initialize
 
 while true; do
-    print_board
     read -rsn1 press
     if [ "$press" = "w" ]; then
         move -1 false
-        new_twos
     elif [ "$press" = "a" ]; then
         move -1 true
-        new_twos
     elif [ "$press" = "s" ]; then
         move 1 false
-        new_twos
     elif [ "$press" = "d" ]; then
         move 1 true
-        new_twos
     elif [ "$press" = "q" ]; then
         exit 0
+    else
+        continue
     fi
     clear
+    new_twos
+    print_board
 done
 
 
