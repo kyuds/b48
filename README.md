@@ -3,9 +3,11 @@ A 2048 game implementation written purely in bashscript. Since the random "2" pl
 ```
 brew install coreutils
 ```
-Currently only supports WASD keys and Q to quit. 
+Currently only supports WASD keys and Q to quit. Also, the game currently 
+does not detect game loss. It will quit once it cannot generate new tiles.
 
 ### TODO
 - [ ] Arrow-key command support
-- [ ] View of final board
+- [X] View of final board (Oct.18.2023)
 - [ ] Refactor repetitive logic
+- [ ] Detection of game ending

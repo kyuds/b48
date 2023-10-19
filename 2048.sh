@@ -260,19 +260,7 @@ while true; do
     else
         continue
     fi
-    clear
     new_twos
+    clear
     print_board
 done
-
-
-
-
-
-
-
-
-
-
-
-
